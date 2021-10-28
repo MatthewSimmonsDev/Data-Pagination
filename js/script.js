@@ -16,6 +16,7 @@ function showPage(list, page){
    for(let i = 0; i< list.length; i++){
       if(i >= startIndex  && i < endIndex){
          // Start of list elements
+         // *NOTE* I used two different methods for adding the markup, for practice.
          const studentLI = document.createElement(`li`);
          studentLI.className = 'student-item cf';
         
@@ -55,6 +56,7 @@ function showPage(list, page){
          joinedDetails.appendChild(joinDate);
       }
    }
+
 }
 
 
@@ -70,6 +72,7 @@ function addPagination(list){
    for(let i = 0; i <list.length / numberOfStudents; i++){
       const buttonList = document.createElement('li');
       const listButton = document.createElement('button');
+      listButton.className = 'removable';
       listButton.innerHTML = i + 1;
       
       linkList.appendChild(buttonList);
@@ -94,6 +97,62 @@ function addPagination(list){
 
 }
 
+// Search Bar
+// Create Search Bar
+function createSearchBar(list){
+   const header = document.querySelector('.header');
+   // *NOTE* This is the second method of adding markup I used for practice.
+   const markUp = `
+      <span>Search by name</span>
+      <input id="search" placeholder="Search by name...">
+      <button type="button"><img src="img/icn-search.svg" alt="Search icon"></button>
+   `;
+   const searchBar = document.createElement('label');
+   searchBar.className = 'student-search';
+   searchBar.innerHTML = markUp;
+   header.insertAdjacentElement('beforeend', searchBar);
+   
+   // Search Bar Functionality
+   const search = document.querySelector('#search');
+   const button = document.querySelector('button');
+   function searchCase(){
+   let storage = [];
+   let searchInput = search.value;
+   for (let i = 0; i < list.length; i++){
+      let nameFirst = list[i].name.first.toLowerCase();
+      let nameLast = list[i].name.last.toLowerCase();
+      searchInput = searchInput.toLowerCase();
+      if(nameFirst.includes(searchInput) ||nameLast.includes(searchInput) ){
+         storage.push(list[i])
+         showPage(storage, 1);
+         addPagination(storage);
+      }
+   }
+   // No results found conditional
+   if(storage.length === 0 ){
+      const buttons = document.querySelectorAll('.removable');
+      showPage(storage,1)
+      const studentList = document.querySelector('.student-list');
+      results = document.createElement('h3');
+      results.textContent = 'No Results Found';
+      studentList.appendChild(results);
+      for (i = buttons.length - 1; i >= 0; i--){
+         buttons[i].remove();
+      }
+
+   }
+}
+   // Event listeners to track typing or clicking submit
+   search.addEventListener('keyup', () =>{
+      searchCase()
+   });
+   button.addEventListener('click', () => {
+      searchCase();
+   })
+}
+
+
 // Function Calls
 showPage(data, 1);
 addPagination(data);
+createSearchBar(data);
